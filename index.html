@@ -16,7 +16,8 @@
     
     #zoltar { 
       flex:1; 
-      background: url('https://i.imgur.com/0vM8w1K.jpg') center/contain no-repeat; /* CLEAN ZOLTAR FROM BIG */
+      background: url('https://i.pinimg.com/originals/21/52/58/215258057163846863.jpg') center/contain no-repeat;
+      background-color: #0a001f;
       position:relative; filter: drop-shadow(0 0 30px #0f0);
     }
     #crystal { 
@@ -196,7 +197,7 @@
   }
 
   function shareFortune() {
-    const text = `ZOLTAR SAID:\n"${document.getElementById('question').value}"\n\nI WON ${randomTokens.toLocaleString()} $FORTUNE!\n\nPlay: https://zoltar-oracle-2025.vercel.app`;
+    const text = `ZOLTAR SAID:\n"${document.getElementById('question').value}"\n\nI WON ${randomTokens.toLocaleString()} $FORTUNE!\n\nPlay: https://YOURUSERNAME.github.io/zoltar-oracle`;
     navigator.clipboard.writeText(text);
     alert("Copied!");
   }
