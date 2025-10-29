@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zoltar Oracle</title>
+  <title>Zoltar Oracle - Animated</title>
   <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/web3@4.0.3/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bad-words@3.0.4/lib/bad-words.min.js"></script>
@@ -14,19 +14,14 @@
     
     #game { width:100vw; height:100vh; position:relative; display:flex; flex-direction:column; background:#111; }
     
+    /* ANIMATED ZOLTAR SVG */
     #zoltar { 
       flex:1; 
-      background: url('https://i.pinimg.com/originals/21/52/58/215258057163846863.jpg') center/contain no-repeat;
-      background-color: #0a001f;
-      position:relative; filter: drop-shadow(0 0 30px #0f0);
+      display:flex; justify-content:center; align-items:center; padding:1rem;
     }
-    #crystal { 
-      position:absolute; top:35%; left:50%; transform:translateX(-50%); width:18%; 
-      background:radial-gradient(circle at 30% 30%, #0ff, #00f); border-radius:50%; 
-      box-shadow:0 0 40px #0ff; animation:pulse 2s infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity:0.8; transform:scale(1); } 50% { opacity:1; transform:scale(1.1); } }
-    
+    svg { width:90%; max-height:100%; filter: drop-shadow(0 0 30px #0f0); }
+
+    /* CONTROL PANEL */
     #controls { 
       height:35%; background:#000; border-top:8px solid #0f0; padding:1rem; 
       display:flex; flex-direction:column; align-items:center; gap:1rem; position:relative;
@@ -77,7 +72,55 @@
 
 <div id="game">
   <div id="zoltar">
-    <div id="crystal"></div>
+    <!-- ANIMATED ZOLTAR SVG -->
+    <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+      <!-- Cabinet -->
+      <defs>
+        <linearGradient id="cabinet" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8B4513"/>
+          <stop offset="100%" stop-color="#654321"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+      <rect x="40" y="60" width="320" height="380" fill="url(#cabinet)" rx="30"/>
+      <rect x="60" y="80" width="280" height="240" fill="#000" rx="15"/>
+      
+      <!-- Glass Reflection -->
+      <path d="M70 90 Q200 100 330 90 L330 310 Q200 300 70 310 Z" fill="#111" opacity="0.5"/>
+      
+      <!-- Crystal Ball -->
+      <circle cx="200" cy="200" r="70" fill="#222" filter="url(#glow)"/>
+      <circle cx="200" cy="200" r="60" fill="#333"/>
+      <circle cx="215" cy="185" r="15" fill="#0f0" opacity="0.8" id="crystal-glow"/>
+      
+      <!-- Zoltar Head -->
+      <g id="zoltar-head">
+        <ellipse cx="200" cy="190" rx="55" ry="65" fill="#FDBCB4"/>
+        <!-- Turban -->
+        <path d="M145 140 Q200 100 255 140 L250 155 Q200 120 150 155 Z" fill="#FFD700"/>
+        <circle cx="200" cy="135" r="20" fill="#FF4500"/>
+        <!-- Beard -->
+        <path d="M160 220 Q200 240 240 220 L235 235 Q200 255 165 235 Z" fill="#FFF"/>
+        <!-- Eyes -->
+        <circle cx="180" cy="180" r="12" fill="#000"/>
+        <circle cx="220" cy="180" r="12" fill="#000"/>
+        <circle cx="180" cy="180" r="5" fill="#FFF" id="eye-l"/>
+        <circle cx="220" cy="180" r="5" fill="#FFF" id="eye-r"/>
+        <!-- Mouth -->
+        <path d="M175 210 Q200 220 225 210" stroke="#000" stroke-width="3" fill="none" id="mouth"/>
+      </g>
+      
+      <!-- Text -->
+      <text x="200" y="380" fill="#0f0" font-size="32" text-anchor="middle" font-family="Creepster" filter="url(#glow)">ZOLTAR</text>
+      <text x="200" y="420" fill="#0f0" font-size="16" text-anchor="middle" font-family="Creepster">SPEAKS</text>
+    </svg>
   </div>
 
   <div id="controls">
@@ -165,11 +208,16 @@
 
     if (!confirm("DEMO MODE: No real ETH. Continue?")) return;
 
+    // COIN DROP
     const coin = document.getElementById('coin');
     coin.style.opacity = 1;
     gsap.fromTo(coin, { y: -150 }, { y: 80, duration: 1.2, ease: "bounce.out", onComplete: () => coin.style.opacity = 0 });
 
-    gsap.to("#crystal", { scale: 1.2, duration: 0.5, yoyo: true, repeat: 3 });
+    // ZOLTAR ANIMATION
+    gsap.to("#zoltar-head", { y: -8, duration: 0.3, yoyo: true, repeat: 3 });
+    gsap.to("#crystal-glow", { opacity: 1, duration: 0.5, yoyo: true, repeat: 5 });
+    gsap.to("#eye-l, #eye-r", { scale: 1.2, duration: 0.2, yoyo: true, repeat: 5 });
+    gsap.to("#mouth", { attr: { d: "M175 210 Q200 215 225 210" }, duration: 0.3, yoyo: true, repeat: 3 });
 
     poolETH += 0.003 * 0.3;
     document.getElementById('pool-value').innerText = Math.floor(poolETH * 3300);
@@ -185,12 +233,14 @@
     const answers = [
       "The crystal ball glows... A new path opens in 7 days. ⭐",
       "Love arrives with a stranger. Look for green eyes. 🌙",
-      "Fortune favors the bold. Take the leap. 🪐"
+      "Fortune favors the bold. Take the leap. 🪐",
+      "Your destiny calls from the east. Answer with courage. 🌟",
+      "Beware the full moon. It brings truth. 🕯️"
     ];
     const answer = answers[Math.floor(Math.random() * answers.length)];
 
     const fortune = document.getElementById('fortune');
-    document.getElementById('answer-text').innerHTML = `<strong>ZOLTAR:</strong><br><br>${answer}`;
+    document.getElementById('answer-text').innerHTML = `<strong>ZOLTAR SPEAKS:</strong><br><br>${answer}`;
     document.getElementById('airdrop-info').innerHTML = `You won <strong>${randomTokens.toLocaleString()} $FORTUNE</strong>!`;
     fortune.style.display = 'block';
     gsap.fromTo(fortune, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" });
